@@ -1,0 +1,108 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
+		<style type="text/css">
+		</style>
+	</head>
+	<body>
+		<script type="text/x-handlebars">
+		{{outlet}}
+		</script>
+		<script type="text/x-handlebars" data-template-name="feed">
+			<div>I will show {{model.name}} here</div>
+			{{render posts}}
+		</script>
+		<script type="text/x-handlebars" data-template-name="posts">
+			{{#each post in controller}}
+				<div>{{post.text}}</div>
+			{{/each}}
+		</script>
+		<script type="text/javascript" src="lib/jquery.js"></script>
+		<script type="text/javascript" src="lib/handlebars.js"></script>
+		<script type="text/javascript" src="lib/ember-1.0.0-rc.1.js"></script>
+		<script type="text/javascript" src="lib/ember-data-12.js"></script>
+		<script type="text/javascript" src="lib/jquery.mockjax.js"></script>
+		<script type="text/javascript" src="newsfeed.js"></script>
+		<script type="text/javascript">
+			$.mockjax({
+				url:'/feeds/1',
+				responseTime: 250,
+				type:'get',
+				response: function(){
+					this.responseText = { "feed" :{
+						id:1,
+						name:"Ember Web App",
+						posts :[1,2]
+					}
+				}
+			}
+			});
+			$.mockjax({
+		  			url: '/posts',
+		  			responseTime: 250,  
+		  			type:'get',			
+		  			response: function(){
+		  				this.responseText = {"posts" : window.globalStatusList};  				
+		  			}
+				});
+			$.mockjax({
+					url: '/posts',
+					responseTime: 255,  
+					type:'post',			
+					data:this.data,
+					contentType: 'text/json',
+					response: function(options){
+						var statusObj = eval('(' +options.data + ')')
+						statusObj.id = window.globalStatusList.length ;
+						window.globalStatusList.push(statusObj);
+						this.responseText = statusObj;
+					}
+			});
+			$.mockjax({
+	  			url: '/comments',
+	  			responseTime: 750,  
+	  			type: 'get',			
+	  			response: function(){
+	  				this.responseText = {"comments": window.comments};  				
+				}
+			});
+			$.mockjax({
+				url: '/comment',
+				responseTime: 250,  
+				type:'post',			
+				data:this.data,
+				contentType: 'text/json',
+				response: function(options){
+					var statusObj = eval('(' +options.data + ')')
+					statusObj.id = window.globalCommentList.length ;
+					window.globalCommentList.push(statusObj);
+					this.responseText = statusObj;
+				}
+					
+		});
+		var globalStatusList = [{
+			id:1,
+			text:"orem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempo",
+			comment_ids:[1],
+			feed_id:1
+		},{
+			id:2,
+			text:"orem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempo",
+			comments:[2],
+			feed_id:1
+
+		}];
+
+		var comments = [{
+			id:1,
+			text:"comment1",
+			post_id: 1
+		},{
+			id:2,
+			text:"comment1",
+			post_id: 1
+		}
+		]
+	</script>
+	</body>
+</html>
